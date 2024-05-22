@@ -1,29 +1,23 @@
 /* 
-ขั้นตอนการสร้าง Docker Image
+การรัน Docker Container จาก Docker Image 
 
-หน้าจอ Code และคำอธิบาย:
-
-```
-$ docker build -t test:latest .
-```
-// คำสั่งนี้ใช้สำหรับสร้าง Docker Image ใหม่จาก Dockerfile ในไดเรกทอรีปัจจุบัน
-// -t test:latest: กำหนดชื่อและแท็กของ Image ใหม่เป็น "test:latest"
-// . (จุด): ระบุว่าให้ใช้ Dockerfile ในไดเรกทอรีปัจจุบัน
+โดยใช้คำสั่ง `docker run` พร้อมกับกำหนดชื่อและพอร์ทของ Container จากนั้นจะเปิดเบราว์เซอร์และเข้าถึงแอปพลิเคชันที่รันอยู่บน Container ผ่านพอร์ทที่กำหนดไว้
 
 ```
-[+] Building 36.2s (11/11) FINISHED
-...
-=> => naming to docker.io/library/test:latest 0.0s
-=> => unpacking to docker.io/library/test:latest 0.7s
+$ docker run -d \
+  --name web1 \
+  --publish 8080:8080 \
+  test:latest
 ```
-// ส่วนนี้แสดงความคืบหน้าในการสร้าง Image จนเสร็จสมบูรณ์
+// คำสั่งนี้ใช้สำหรับสร้างและรัน Container ใหม่จาก Docker Image ที่ชื่อ "test:latest"
+// -d: รัน Container ในโหมด Detached (รันเป็นกระบวนการพื้นหลัง)
+// --name web1: กำหนดชื่อของ Container เป็น "web1"
+// --publish 8080:8080: เปิดพอร์ท 8080 ของ Container และมอบหมายให้พอร์ท 8080 ของเครื่องโฮสต์ด้วย
 
 ```
-$ docker images
-REPO   TAG     IMAGE ID      CREATED        SIZE
-test   latest  0435f2738cf6  21 seconds ago 160MB
+localhost:8080 หรือ 127.0.0.1:8080
 ```
-// หลังจากสร้าง Image เสร็จแล้ว คำสั่ง `docker images` จะแสดงรายการ Image ที่ถูกสร้างขึ้นมาใหม่ล่าสุด ซึ่งจะเห็น Image ชื่อ "test" แท็ก "latest"
+// ถ้าคุณใช้ Docker Desktop บน Windows หรือ Mac ให้เปิดเบราว์เซอร์และเข้าถึง localhost:8080 หรือ 127.0.0.1:8080
 
-หลังจากทำตามขั้นตอนนี้เสร็จแล้ว คุณจะได้ Docker Image ของแอปพลิเคชันที่ประกอบด้วยแอปพลิเคชันและแพคเกจพึ่งพาต่างๆ ที่จำเป็นสำหรับการรันแอปพลิเคชันนั้น ซึ่งเรียกว่า "การทำ Containerize แอปพลิเคชัน"
+
 */
