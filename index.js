@@ -1,43 +1,41 @@
 /* 
 
-Shim เป็นกระบวนการเล็กๆ ที่ทำหน้าที่เป็นตัวกลางระหว่าง containerd และ container เมื่อสร้าง container ใหม่ containerd จะสร้าง shim process และ runc process ขึ้นมา
 
-รunc process จะหยุดทำงานหลังจากสร้าง container เสร็จ แต่ shim process จะยังคงอยู่เป็นกระบวนการหลักของ container มีหน้าที่:
+ใน Linux ระบบ Docker นำองค์ประกอบต่างๆ ที่เราได้กล่าวถึงมาปรากฏในรูปแบบของไบนารีแยกต่างหากดังนี้:
 
-1. รายงานสถานะของ container 
-2. จัดการช่องทางนำเข้า/นำออกข้อมูล (STDIN/STDOUT) ของ container
-3. เปิดช่องให้สามารถใช้รันไทม์อื่นแทน runc ได้
+- /usr/bin/dockerd (Docker daemon)
+- /usr/bin/containerd
+- /usr/bin/containerd-shim-runc-v2
+- /usr/bin/runc
 
-เมื่อรันคำสั่ง `docker run` มีขั้นตอนดังนี้:
+คุณสามารถเห็นองค์ประกอบเหล่านี้บนโฮสต์ Docker ที่ใช้ Linux โดยรันคำสั่ง ps บางกระบวนการจะปรากฏเฉพาะเมื่อระบบมี container กำลังทำงานอยู่เท่านั้น และคุณจะไม่เห็นกระบวนการเหล่านี้หากคุณใช้ Docker Desktop บน Mac เนื่องจาก Docker Engine จะทำงานอยู่ภายใน VM
 
+```bash
+# รันคำสั่ง ps บน Linux เพื่อดูกระบวนการต่างๆ ของ Docker
+ps aux | grep docker
+
+# ผลลัพธ์จะแสดงกระบวนการดังนี้:
+
+# Docker daemon
+/usr/bin/dockerd
+
+# containerd
+/usr/bin/containerd
+
+# shim process สำหรับแต่ละ container
+/usr/bin/containerd-shim-runc-v2 -namespace moby ...
+
+# runc process สำหรับสร้าง/เริ่มต้น container (จะหายไปหลังจากสร้างเสร็จ)  
+/usr/bin/runc create ...
+/usr/bin/runc start ...
 ```
-     +----------------+
-     | Docker Daemon  |
-     +----------------+
-            |
-     +----------------+
-     |  containerd    |
-     +----------------+
-            |
- +----------+----------+
- |          |          |
- |  shim    |  runc    |
- |          |          |
- +----------+----------+
-            |
-     +----------------+
-     |    Container   |
-     +----------------+
-```
 
-1. Docker Daemon ได้รับคำสั่ง `docker run` และส่งต่อให้ containerd
-2. containerd จะสร้างกระบวนการ shim และ runc ขึ้นมาสำหรับ container ใหม่
-3. runc จะเริ่มสร้าง container ตามข้อกำหนดที่ได้รับ
-4. เมื่อ container ถูกสร้างและเริ่มทำงานแล้ว runc จะหยุดทำงาน
-5. shim จะคงอยู่เป็นกระบวนการหลักของ container ทำหน้าที่:
-    - รายงานสถานะของ container ให้ containerd
-    - จัดการช่องทาง STDIN/STDOUT ของ container
-    - เปิดช่องให้สามารถใช้รันไทม์อื่นแทน runc ได้
+จากผลลัพธ์ เราจะเห็นว่า:
 
-จากแผนภาพ เราเห็นได้ว่า shim เป็นส่วนสำคัญที่ทำให้ container สามารถทำงานได้โดยไม่ต้องใช้ daemon ทำงานตลอดเวลา ทำให้มีประสิทธิภาพมากขึ้น
+- `dockerd` เป็น Docker daemon หลัก
+- `containerd` เป็นกระบวนการหลักในการจัดการ container
+- `containerd-shim-runc-v2` เป็น shim process สำหรับแต่ละ container
+- `runc` เป็นกระบวนการสำหรับสร้างและเริ่มต้น container (จะหายไปหลังจากทำงานเสร็จ)
+
+ดังนั้น เมื่อรัน `docker run` Docker daemon จะสั่งงานผ่าน containerd ซึ่งจะสร้าง shim และ runc process ขึ้นมาเพื่อจัดการ container ตามที่ได้อธิบายไปก่อนหน้านี้
 */
