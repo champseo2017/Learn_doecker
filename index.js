@@ -1,20 +1,17 @@
 /* 
 
-สรุปเป็นภาษาไทยสำหรับ Dev:
+Docker Scout เป็นเครื่องมือที่ช่วยในการสแกนหาช่องโหว่ (vulnerability) ใน Docker image โดยจะวิเคราะห์ส่วนประกอบต่างๆ ภายใน image เช่น package ที่ติดตั้ง และเทียบกับฐานข้อมูลช่องโหว่ที่ทราบแล้ว เพื่อระบุจุดอ่อนที่อาจถูกโจมตีได้
 
-การติดตั้ง Docker แบบสะอาดจะมี local repository ว่างเปล่า local repository เป็นศัพท์เฉพาะที่ใช้เรียกพื้นที่บนเครื่องของคุณที่ Docker เก็บ image ไว้เพื่อให้เข้าถึงได้สะดวกขึ้น เราบางครั้งเรียกมันว่า image cache และบน Linux มันมักจะอยู่ที่ /var/lib/docker/<storage-driver> อย่างไรก็ตาม ถ้าคุณใช้ Docker Desktop มันจะอยู่ใน Docker VM
+การใช้งาน Docker Scout จะช่วยให้ผู้พัฒนาสามารถทราบถึงช่องโหว่ต่างๆ ก่อนที่จะนำ image ไปใช้งานจริง และสามารถแก้ไขหรืออัปเดต package ที่มีปัญหาเพื่อเพิ่มความปลอดภัยให้กับ container ได้
 
-รันคำสั่งต่อไปนี้เพื่อตรวจสอบเนื้อหาใน local repository ของคุณ ตัวอย่างนี้มี image สามอันที่เกี่ยวข้องกับ Docker Desktop extension สามตัวที่ผมกำลังรันอยู่ ของคุณอาจจะแตกต่างออกไปและอาจจะว่างเปล่า
+ตัวอย่างคำสั่งในการใช้ Docker Scout สแกน image ชื่อ my-image:
 
 ```bash
-$ docker images
-REPOSITORY                             TAG       IMAGE ID       CREATED        SIZE
-docker/disk-usage-extension            0.2.9     f4c95478a537   26 hours ago   3.64MB
-docker/logs-explorer-extension         0.2.6     417dd9a8f96d   26 hours ago   17.9MB
-portainer/portainer-docker-extension   2.19.4    908d04d20e86   2 months ago   364MB
+docker scout cves my-image
 ```
 
-กระบวนการในการดึง image มาเรียกว่า pulling รันคำสั่งต่อไปนี้เพื่อ pull redis image และตรวจสอบว่ามันมีอยู่ใน local repository ของคุณ
+output จะแสดงรายการช่องโหว่ที่พบใน image พร้อมคำแนะนำในการแก้ไข
 
+Docker Scout เป็นส่วนหนึ่งของชุดเครื่องมือ Docker Desktop ซึ่งผู้ใช้งานสามารถเปิดใช้ได้จากเมนู Settings > Vulnerability scanning โดยไม่เสียค่าใช้จ่ายเพิ่มเติม ช่วยให้มั่นใจได้ว่า image ที่ใช้ในการพัฒนาและ deploy มีความปลอดภัย ปราศจากช่องโหว่ที่อาจก่อให้เกิดความเสียหายได้
 
 */
