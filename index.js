@@ -1,17 +1,20 @@
 /* 
 
-ตัวอย่างต่อไปนี้แสดงวิธีการ pull official image แบบต่างๆ
+ในการ pull image จาก registry อื่น คุณเพียงแค่เพิ่มชื่อ DNS ของ registry ไว้ข้างหน้าชื่อ repository ตัวอย่างเช่น คำสั่งต่อไปนี้จะ pull image ล่าสุดจาก Brandon Mitchell's regclient/regsync repo บน GitHub Container Registry (ghcr.io)
 
 ```bash
-$ docker pull mongo:7.0.5 //Pull image ที่มี tag เป็น '7.0.5' จาก official 'mongo' repository
-
-$ docker pull busybox:glibc //Pull image ที่มี tag เป็น 'glibc' จาก official 'busybox' repository
-
-$ docker pull alpine //Pull image ที่มี tag เป็น 'latest' จาก official 'alpine' repository
+docker pull ghcr.io/regclient/regsync:latest
+latest: Pulling from regclient/regsync
+6f14f2b64ccf: Download complete
+7746d6728537: Download complete
+685af2c79c31: Download complete
+4c377311167a: Download complete
+662e9541e042: Download complete
+Digest: sha256:149a95d47d6beed2a1404d7c3b00dddfa583a94836587ba8e3b4fe59853c1ece
+Status: Downloaded newer image for ghcr.io/regclient/regsync:latest
+ghcr.io/regclient/regsync:latest
 ```
 
-มีสองสามสิ่งที่ควรทราบ ดังที่กล่าวไปก่อนหน้านี้ ถ้าคุณไม่ระบุ image tag หลังชื่อ repository Docker จะสมมติว่าคุณต้องการ image ที่มี tag เป็น latest คำสั่งจะล้มเหลวหาก repository ไม่มี image ที่มี tag เป็น latest image ที่มี tag เป็น latest ไม่ได้รับประกันว่าจะเป็นเวอร์ชันล่าสุดใน repository
-
-การ pull image จาก unofficial repository จะเหมือนกับการ pull จาก official repository เกือบทุกประการ คุณเพียงแค่ต้องเพิ่มชื่อผู้ใช้ Docker Hub หรือชื่อองค์กรไว้ข้างหน้าชื่อ repository ตัวอย่างต่อไปนี้แสดงวิธีการ pull image v2 จาก tu-demo repository ที่เป็นของคนที่ไม่น่าไว้ใจ ซึ่งมี Docker Hub ID เป็น nigelpoulton
+สังเกตว่าการ pull ดูเหมือนกับที่ทำกับ Docker Hub นั่นเป็นเพราะ GHCR รองรับ OCI registry-spec และใช้ Docker Registry v2 API
 
 */
