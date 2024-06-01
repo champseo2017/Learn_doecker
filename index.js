@@ -1,17 +1,16 @@
 /* 
 
-Docker Scout เป็นเครื่องมือที่ช่วยในการสแกนหาช่องโหว่ (vulnerability) ใน Docker image โดยจะวิเคราะห์ส่วนประกอบต่างๆ ภายใน image เช่น package ที่ติดตั้ง และเทียบกับฐานข้อมูลช่องโหว่ที่ทราบแล้ว เพื่อระบุจุดอ่อนที่อาจถูกโจมตีได้
+ส่วนใหญ่แล้ว คุณจะทำงานกับ image โดยอ้างอิงจากชื่อของมัน และคุณสามารถเรียนรู้ได้มากเกี่ยวกับ image จากชื่อของมัน รูป 6.5 แสดงชื่อ image แบบเต็มรูปแบบ (fully qualified image name) ซึ่งประกอบด้วยชื่อ registry, ชื่อ user/organization, ชื่อ repository และ tag Docker จะใส่ค่าของ registry และ tag ให้โดยอัตโนมัติถ้าคุณไม่ได้ระบุ
 
-การใช้งาน Docker Scout จะช่วยให้ผู้พัฒนาสามารถทราบถึงช่องโหว่ต่างๆ ก่อนที่จะนำ image ไปใช้งานจริง และสามารถแก้ไขหรืออัปเดต package ที่มีปัญหาเพื่อเพิ่มความปลอดภัยให้กับ container ได้
-
-ตัวอย่างคำสั่งในการใช้ Docker Scout สแกน image ชื่อ my-image:
+การอ้างถึง image จาก official repository นั้นทำได้ง่าย คุณเพียงแค่ใส่ชื่อ repository และชื่อ image คั่นด้วยเครื่องหมายทวิภาค บางครั้งเราเรียกชื่อ image ว่า tag รูปแบบของคำสั่ง docker pull ที่ดึง image จาก official repository คือ:
 
 ```bash
-docker scout cves my-image
+$ docker pull <repository>:<tag>
 ```
 
-output จะแสดงรายการช่องโหว่ที่พบใน image พร้อมคำแนะนำในการแก้ไข
+ตัวอย่างก่อนหน้านี้ได้ pull Redis image ด้วยคำสั่งต่อไปนี้ มันได้ pull image ที่มี tag เป็น latest จาก redis repository ที่อยู่ระดับบนสุด
 
-Docker Scout เป็นส่วนหนึ่งของชุดเครื่องมือ Docker Desktop ซึ่งผู้ใช้งานสามารถเปิดใช้ได้จากเมนู Settings > Vulnerability scanning โดยไม่เสียค่าใช้จ่ายเพิ่มเติม ช่วยให้มั่นใจได้ว่า image ที่ใช้ในการพัฒนาและ deploy มีความปลอดภัย ปราศจากช่องโหว่ที่อาจก่อให้เกิดความเสียหายได้
-
+```bash
+docker pull redis:latest
+```
 */
