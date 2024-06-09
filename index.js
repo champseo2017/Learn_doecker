@@ -1,32 +1,36 @@
 /* 
 
-วิธีการดูข้อมูลของ layers ใน Docker image โดยมีวิธีหลักๆ ดังนี้
+แสดงถึงการใช้คำสั่ง `docker inspect` เพื่อดูรายละเอียดของ image โดยเฉพาะในส่วนของ layers
 
-1. ใช้คำสั่ง docker pull เพื่อ pull image มาใช้ และสังเกตุดูตอน pull ว่ามีการ pull layers อะไรบ้าง
+เมื่อเรา inspect image node:latest จะได้ผลลัพธ์ประมาณนี้
 
-2. ใช้คำสั่ง docker inspect เพื่อดูรายละเอียดของ image 
-
-3. ใช้คำสั่ง docker history เพื่อดู history หรือประวัติของ image ว่ามีการสร้าง layer ไหนบ้าง
-
-ยกตัวอย่างเช่น ถ้าเรา pull image node:latest มา จะเห็นผลลัพธ์ประมาณนี้
-
+```json
+$ docker inspect node:latest
+[
+    {
+        "Id": "sha256:bd3d4369ae.......fa2645f5699037d7d8c6b415a10",
+        "RepoTags": [
+            "node:latest"
+        ],
+        ...
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:c8a75145fc...894129005e461a43875a094b93412",
+                "sha256:c6f2b330b6...7214ed6aac305dd03f70b95cdc610",
+                "sha256:055757a193...3a9565d78962c7f368d5ac5984998",
+                "sha256:4837348061...12695f548406ea77feb5074e195e3",
+                "sha256:0cad5e07ba...4bae4cfc66b376265e16c32a0aae9"
+            ]
+        }
+    }
+]
 ```
-docker pull node:latest 
-latest: Pulling from library/ubuntu 
-952132ac251a: Pull complete 
-82659f8f1b76: Pull complete 
-c19118ca682d: Pull complete 
-8296858250fe: Pull complete 
-24e0251a0e2c: Pull complete 
-Digest: sha256:f4691c96e6bbaa99d...28ae95a60369c506dd6e6f6ab 
-Status: Downloaded newer image for node:latest
-docker.io/node:latest
-```
 
-จากผลลัพธ์จะเห็นว่า image นี้มี 5 layers โดยแต่ละบรรทัดที่ลงท้ายด้วย `Pull complete` คือ layer นึงใน image 
+จะเห็นว่าในส่วนของ `RootFS` จะมี field ที่ชื่อ `Layers` ซึ่งเก็บ SHA256 hashes ของแต่ละ layer ใน image นี้
 
-ดังนั้น เราจะเห็น layer IDs ทั้ง 5 ชั้น ของ image node:latest ได้ดังในรูป 6.7 
+ในตัวอย่างนี้จะเห็นว่ามี 5 layers เหมือนกับตอนที่เรา pull image นี้มา แต่ SHA256 hashes ที่แสดงจะไม่ตรงกับ ID แบบสั้นๆ ตอนเรา pull
 
-สรุปคือ เราสามารถใช้คำสั่ง docker pull, docker inspect และ docker history เพื่อตรวจสอบดูรายละเอียดของ layers ในแต่ละ image ได้ ซึ่งมันจะช่วยให้เราเข้าใจโครงสร้างของ image ได้ดีขึ้นนั่นเอง
+สรุปง่ายๆ คือ `docker inspect` เป็นอีกวิธีนึงในการดูข้อมูลของ layers ใน image โดยมันจะแสดง SHA256 hash ของแต่ละ layer ให้เราเห็น ซึ่งเราสามารถเอาข้อมูลพวกนี้ไปใช้ในการวิเคราะห์ หรืออ้างอิงถึง layers แต่ละอันได้
 
 */
