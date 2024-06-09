@@ -1,28 +1,31 @@
 /* 
 
-คำสั่ง `docker inspect` เป็นคำสั่งที่ดีมากในการดูข้อมูลรายละเอียดของ image ส่วนอีกคำสั่งที่ใช้ดูข้อมูล layers ของ image ได้คือ `docker history` 
+ทุก Docker image จะเริ่มต้นด้วย base layer เสมอ และทุกครั้งที่เราเพิ่ม content ใหม่เข้าไป Docker ก็จะเพิ่ม layer ใหม่ขึ้นมา
 
-แต่ต้องระวังว่า `docker history` จะแสดงประวัติการ build ของ image ซึ่งอาจจะไม่ใช่รายการ layers ที่แน่นอนในตัว image สุดท้าย 
+ลองดูตัวอย่างง่ายๆ ของการสร้างแอป Python อันนึง สมมติว่า policy ของบริษัทเรากำหนดให้ทุกแอปต้องสร้างจาก official Ubuntu 24.04 image 
 
-ยกตัวอย่างเช่น บาง Dockerfile instructions เช่น ENV, EXPOSE, CMD และ ENTRYPOINT จะเพิ่มแค่ metadata เข้าไปใน image เท่านั้น โดยไม่ได้สร้าง layer ใหม่
+นั่นหมายความว่า official Ubuntu 24.04 image จะเป็น base layer ของแอปเรา ส่วนการติดตั้ง Python จะเพิ่ม layer ที่ 2 และ source code ของแอปเราจะเพิ่ม layer ที่ 3 
 
-ดังนั้นเวลาใช้ `docker history` ต้องระวังตรงนี้ด้วย ว่ามันอาจจะแสดงข้อมูลที่ไม่ใช่ layers ของ image จริงๆ ก็ได้ แต่โดยรวมแล้วมันก็ยังมีประโยชน์ในการดูประวัติการสร้าง image อยู่ดี
+ดังนั้น image สุดท้ายจะมี 3 layers ดังในรูป 6.8 (จำไว้ว่านี่เป็นตัวอย่างง่ายๆ เพื่อให้เข้าใจเท่านั้น)
 
-```bash
-# ตัวอย่างการใช้คำสั่ง docker history
-$ docker history node:latest
-IMAGE          CREATED        CREATED BY                                      SIZE      COMMENT
-bd3d4369ae87   6 days ago     /bin/sh -c #(nop)  CMD ["node"]                 0B
-<missing>      6 days ago     /bin/sh -c #(nop)  ENTRYPOINT ["docker-entry…   0B
-<missing>      6 days ago     /bin/sh -c #(nop) COPY file:2387388516437885…   388B
-<missing>      6 days ago     /bin/sh -c apk add --no-cache --virtual .bui…   7.84MB
-<missing>      6 days ago     /bin/sh -c #(nop)  ENV YARN_VERSION=1.22.19     0B
-<missing>      3 weeks ago    /bin/sh -c addgroup -g 1000 node     && addu…   104MB
-<missing>      3 weeks ago    /bin/sh -c #(nop)  ENV NODE_VERSION=20.1.0      0B
-<missing>      3 weeks ago    /bin/sh -c #(nop)  CMD ["/bin/sh"]              0B
-<missing>      3 weeks ago    /bin/sh -c #(nop) ADD file:9a4f77c1528c6c105…   7.34MB
+```dockerfile
+# Layer 1 (base): Official Ubuntu 24.04 image
+FROM ubuntu:24.04
+
+# Layer 2: Install Python
+RUN apt-get update && apt-get install -y python3
+
+# Layer 3: Add application code
+COPY app.py /app/
+WORKDIR /app
+CMD ["python3", "app.py"]
 ```
 
-จากตัวอย่างจะเห็นว่ามีบาง step ที่ไม่ได้สร้าง layer ใหม่ เช่น step ที่รันคำสั่ง ENV และ CMD เป็นต้น โดยจะสังเกตได้จากขนาด (SIZE) ที่เป็น 0B นั่นเอง
+จาก Dockerfile ข้างบน จะแบ่งเป็น layer ได้ดังนี้
 
+- Layer 1 (base layer): กำหนดให้ใช้ Ubuntu 24.04 เป็น base image ด้วยคำสั่ง FROM
+- Layer 2: ติดตั้ง Python ด้วยคำสั่ง RUN
+- Layer 3: เพิ่ม source code ของแอปด้วย COPY, กำหนด working directory ด้วย WORKDIR และกำหนดคำสั่งเริ่มต้นด้วย CMD
+
+เมื่อ build image นี้ เราจะได้ image ที่มี 3 layers ซึ่งเวลารันจะเริ่มต้นจาก base layer คือ Ubuntu ก่อน แล้วค่อยรันคำสั่งในแต่ละ layer ถัดไปจนถึง layer สุดท้าย
 */
