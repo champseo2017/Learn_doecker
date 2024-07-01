@@ -1,12 +1,15 @@
 /* 
 
-Docker Image และ Layers
+เราสามารถใช้คำสั่ง curl เพื่อดึงข้อมูล digest ของ image โดยตรงจาก Docker Hub ได้ โดยไม่ต้องโหลด image มาก่อน
 
-- Image ประกอบด้วย read-only layers หลายชั้น วางซ้อนกันเป็นสแต็ค
-- ไฟล์จะกระจายอยู่ตาม layers ต่างๆ 
-- Layer ล่างสุดเรียกว่า base layer
-- ถ้ามีไฟล์ซ้ำกันใน layer ต่างๆ ไฟล์ใน layer บนสุดจะมีผลเหนือกว่า (obscure)
-- ภาพรวมของ image (unified view) จะแสดงแค่ไฟล์ล่าสุดสุดในแต่ละตำแหน่ง  
-- สร้าง image ใหม่ได้โดยเพิ่ม layer ที่มีไฟล์ที่เปลี่ยนแปลงครอบ layer เดิม
-- Container จะสร้าง writable layer ของตัวเองไว้บนสุด เหนือ image layers เพื่อเก็บข้อมูลที่เปลี่ยนไประหว่างรัน
+ curl "https://hub.docker.com/v2/repositories/nigelpoulton/k8sbook/tags/?name=latest" \
+|jq '.results[].digest'
+
+"sha256:13dd59a0c74e9a147800039b1ff4d61201375c008b96a29c5bd17244bce2e14b"
+
+# คำสั่งนี้ทำงานดังนี้:
+# 1. ใช้ curl เพื่อส่งคำขอไปยัง Docker Hub API
+# 2. ระบุ repository และ tag ที่ต้องการดู (nigelpoulton/k8sbook:latest)
+# 3. ใช้ jq เพื่อแยกเอาเฉพาะข้อมูล digest ออกมา
+# 4. ผลลัพธ์คือ digest ของ image ที่เราต้องการ
 */
